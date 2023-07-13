@@ -13,7 +13,7 @@ public class Percolation {
 
     // creates n-by-n grid, with all sites initially blocked
     public Percolation(int n) {
-        if(n < 0) {
+        if(n <= 0) {
             throw new IllegalArgumentException();
         }
         id = new int[n*n];
@@ -91,6 +91,5 @@ public class Percolation {
 
     // test client (optional)
     public static void main(String[] args) {
-
     }
 }
