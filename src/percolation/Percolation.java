@@ -18,7 +18,7 @@ public class Percolation {
         }
         id = new int[n*n];
         status = new boolean[n*n];
-        length = (int)Math.sqrt(id.length);
+        length = n;
         uf = new WeightedQuickUnionUF(n*n);
         for (int i = 0; i < n*n; i++) {
             id[i] = i;
