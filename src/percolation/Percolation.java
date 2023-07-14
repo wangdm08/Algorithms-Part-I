@@ -24,26 +24,26 @@ public class Percolation {
 
     // opens the site (row, col) if it is not open already
     public void open(int row, int col) {
-        if (row < 0 || row > length || col < 0 || col > length) {
+        if (row < 1 || row > length || col < 1 || col > length) {
             throw new IllegalArgumentException();
         }
         if (!isOpen(row, col)) {
             int position = (row - 1) * length + col - 1;
             status[position] = true;
-            if (isOpen(row, col - 1))
+            if (col > 1 && isOpen(row, col - 1))
                 uf.union(position, position - 1);
-            if (isOpen(row, col + 1))
+            if (col < length && isOpen(row, col + 1))
                 uf.union(position, position + 1);
-            if (isOpen(row - 1, col))
+            if (row > 1 && isOpen(row-1, col))
                 uf.union(position, position - length);
-            if (isOpen(row + 1, col))
+            if (row < length && isOpen(row+1, col))
                 uf.union(position, position + length);
         }
     }
 
     // is the site (row, col) open?
     public boolean isOpen(int row, int col) {
-        if (row < 0 || row > length || col < 0 || col > length) {
+        if (row < 1 || row > length || col < 1 || col > length) {
             throw new IllegalArgumentException();
         }
         return status[(row - 1) * length + col - 1];
@@ -51,7 +51,7 @@ public class Percolation {
 
     // is the site (row, col) full?
     public boolean isFull(int row, int col) {
-        if (row < 0 || row > length || col < 0 || col > length) {
+        if (row < 1 || row > length || col < 1 || col > length) {
             throw new IllegalArgumentException();
         }
         boolean mark = false;
