@@ -63,8 +63,10 @@ public class Percolation {
         for (int i = 0; i < length; i++) {
             if (isOpen(1, i + 1)) {
                 int position = (row - 1) * length + col - 1;
-                if (uf.find(position) == uf.find(i))
+                if (uf.find(position) == uf.find(i)) {
                     mark = true;
+                    break;
+                }
             }
         }
         return mark;
