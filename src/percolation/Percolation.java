@@ -8,6 +8,8 @@ public class Percolation {
     private boolean[] status;
     private int length;
     private WeightedQuickUnionUF uf;
+    private  int count;
+    private boolean percolatesMark;
 
 
     // creates n-by-n grid, with all sites initially blocked
@@ -17,6 +19,8 @@ public class Percolation {
         }
         status = new boolean[n * n];
         length = n;
+        this.count = 0;
+        this.percolatesMark = false;
         uf = new WeightedQuickUnionUF(n * n);
         for (int i = 0; i < n * n; i++)
             status[i] = false;
@@ -38,6 +42,7 @@ public class Percolation {
                 uf.union(position, position - length);
             if (row < length && isOpen(row+1, col))
                 uf.union(position, position + length);
+            count+=1;
         }
     }
 
@@ -56,7 +61,7 @@ public class Percolation {
         }
         boolean mark = false;
         for (int i = 0; i < length; i++) {
-            if (isOpen(1, i+1)) {
+            if (isOpen(1, i + 1)) {
                 int position = (row - 1) * length + col - 1;
                 if (uf.connected(position, i))
                     mark = true;
@@ -67,26 +72,20 @@ public class Percolation {
 
     // returns the number of open sites
     public int numberOfOpenSites() {
-        int count = 0;
-        for (int i = 1; i <= length; i++) {
-            for (int j = 1; j <= length; j++) {
-                if (isOpen(i, j))
-                    count++;
-            }
-        }
         return count;
     }
 
     // does the system percolate?
     public boolean percolates() {
-        boolean mark = false;
-        for (int i = 1; i <= length; i++) {
-            if (isFull(length, i)) {
-                mark = true;
-                break;
+        if (!percolatesMark) {
+            for (int i = 1; i <= length; i++) {
+                if (isFull(length, i)) {
+                    percolatesMark = true;
+                    break;
+                }
             }
         }
-        return mark;
+        return percolatesMark;
     }
 
     // test client (optional)

@@ -15,14 +15,14 @@ public class PercolationStats {
             throw new IllegalArgumentException();
         }
         percolation = new Percolation(n);
-        trials = trials;
+        this.trials = trials;
         samples = new double[trials];
         while (!percolation.percolates()) {
             percolation.open(StdRandom.uniformInt(1, n + 1),
                     StdRandom.uniformInt(1, n + 1));
         }
-        for (double sample : samples) {
-            sample = (double) percolation.numberOfOpenSites() / (n * n);
+        for (int i = 0; i < samples.length; i++) {
+            samples[i] = (double) percolation.numberOfOpenSites() / (n * n);
         }
     }
 
