@@ -9,7 +9,7 @@ public class Percolation {
     private int length;
     private WeightedQuickUnionUF uf;
     private  int count;
-    private boolean percolatesMark;
+    private boolean mark;
 
 
     // creates n-by-n grid, with all sites initially blocked
@@ -20,7 +20,7 @@ public class Percolation {
         status = new boolean[n * n];
         length = n;
         this.count = 0;
-        this.percolatesMark = false;
+        this.mark = false;
         uf = new WeightedQuickUnionUF(n * n);
         for (int i = 0; i < n * n; i++)
             status[i] = false;
@@ -63,7 +63,7 @@ public class Percolation {
         for (int i = 0; i < length; i++) {
             if (isOpen(1, i + 1)) {
                 int position = (row - 1) * length + col - 1;
-                if (uf.connected(position, i))
+                if (uf.find(position) == uf.find(i))
                     mark = true;
             }
         }
@@ -77,15 +77,15 @@ public class Percolation {
 
     // does the system percolate?
     public boolean percolates() {
-        if (!percolatesMark) {
+        if (!mark) {
             for (int i = 1; i <= length; i++) {
                 if (isFull(length, i)) {
-                    percolatesMark = true;
+                    mark = true;
                     break;
                 }
             }
         }
-        return percolatesMark;
+        return mark;
     }
 
     // test client (optional)
