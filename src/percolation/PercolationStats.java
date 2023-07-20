@@ -5,23 +5,20 @@ import edu.princeton.cs.algs4.StdStats;
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 public class PercolationStats {
-    private Percolation percolation;
     private int trials;
     private double[] samples;
 
     // perform independent trials on an n-by-n grid
     public PercolationStats(int n, int trials) {
-        if (n <= 0 || trials <= 0) {
+        if (n <= 0 || trials <= 0)
             throw new IllegalArgumentException();
-        }
         this.trials = trials;
         samples = new double[trials];
         for (int i = 0; i < trials; i++) {
-            percolation = new Percolation(n);
-            while (!percolation.percolates()) {
+            Percolation percolation = new Percolation(n);
+            while (!percolation.percolates())
                 percolation.open(StdRandom.uniformInt(1, n + 1),
                         StdRandom.uniformInt(1, n + 1));
-            }
             samples[i] = (double) percolation.numberOfOpenSites() / (n * n);
         }
     }

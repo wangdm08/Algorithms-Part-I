@@ -14,9 +14,8 @@ public class Percolation {
 
     // creates n-by-n grid, with all sites initially blocked
     public Percolation(int n) {
-        if (n <= 0) {
+        if (n <= 0)
             throw new IllegalArgumentException();
-        }
         status = new boolean[n * n];
         length = n;
         this.count = 0;
@@ -28,9 +27,8 @@ public class Percolation {
 
     // opens the site (row, col) if it is not open already
     public void open(int row, int col) {
-        if (row < 1 || row > length || col < 1 || col > length) {
+        if (row < 1 || row > length || col < 1 || col > length)
             throw new IllegalArgumentException();
-        }
         if (!isOpen(row, col)) {
             int position = (row - 1) * length + col - 1;
             status[position] = true;
@@ -38,9 +36,9 @@ public class Percolation {
                 uf.union(position, position - 1);
             if (col < length && isOpen(row, col + 1))
                 uf.union(position, position + 1);
-            if (row > 1 && isOpen(row-1, col))
+            if (row > 1 && isOpen(row - 1, col))
                 uf.union(position, position - length);
-            if (row < length && isOpen(row+1, col))
+            if (row < length && isOpen(row + 1, col))
                 uf.union(position, position + length);
             count+=1;
         }
@@ -48,28 +46,44 @@ public class Percolation {
 
     // is the site (row, col) open?
     public boolean isOpen(int row, int col) {
-        if (row < 1 || row > length || col < 1 || col > length) {
+        if (row < 1 || row > length || col < 1 || col > length)
             throw new IllegalArgumentException();
-        }
         return status[(row - 1) * length + col - 1];
     }
 
     // is the site (row, col) full?
     public boolean isFull(int row, int col) {
-        if (row < 1 || row > length || col < 1 || col > length) {
+        if (row < 1 || row > length || col < 1 || col > length)
             throw new IllegalArgumentException();
+        boolean fullMark = false;
+//        boolean mark = false;
+//        for (int i = 0; i < length; i++) {
+//            if (isOpen(1, i + 1)) {
+//                int position = (row - 1) * length + col - 1;
+//                if (uf.find(position) == uf.find(i)) {
+//                    mark = true;
+//                    break;
+//                }
+//            }
+//        }
+        if (isOpen(row, col) && row < 2)
+            fullMark = true;
+        if (isOpen(row, col)) {
+            int position = (row - 1) * length + col - 1;
+            if (col > 1 && isOpen(row, col - 1))
+                if (uf.find(position - 1) >= 0 && (uf.find(position - 1) < length))
+                    fullMark = true;
+            if (col < length && isOpen(row, col + 1))
+                if (uf.find(position + 1) >= 0 && (uf.find(position + 1) < length))
+                    fullMark = true;
+            if (row > 1 && isOpen(row - 1, col))
+                if (uf.find(position - length) >= 0 && (uf.find(position - length) < length))
+                    fullMark = true;
+            if (row < length && isOpen(row + 1, col))
+                if (uf.find(position + length) >= 0 && (uf.find(position + length) < length))
+                    fullMark = true;
         }
-        boolean mark = false;
-        for (int i = 0; i < length; i++) {
-            if (isOpen(1, i + 1)) {
-                int position = (row - 1) * length + col - 1;
-                if (uf.find(position) == uf.find(i)) {
-                    mark = true;
-                    break;
-                }
-            }
-        }
-        return mark;
+        return fullMark;
     }
 
     // returns the number of open sites
