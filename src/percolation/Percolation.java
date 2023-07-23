@@ -1,7 +1,5 @@
 package percolation;
 
-import edu.princeton.cs.algs4.StdRandom;
-import edu.princeton.cs.algs4.StdStats;
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 public class Percolation {
@@ -16,13 +14,18 @@ public class Percolation {
     public Percolation(int n) {
         if (n <= 0)
             throw new IllegalArgumentException();
-        status = new boolean[n * n];
+        status = new boolean[n * n + 2];
         length = n;
         this.count = 0;
         this.mark = false;
-        uf = new WeightedQuickUnionUF(n * n);
-        for (int i = 0; i < n * n; i++)
+        uf = new WeightedQuickUnionUF(n * n + 2);
+        for (int i = 0; i < n * n + 2; i++) {
             status[i] = false;
+            if (i > 0 && i <= n)
+                uf.union(i, 0);
+            if (i > n * n - n && i <= n * n)
+                uf.union(i, n * n + 1);
+        }
     }
 
     // opens the site (row, col) if it is not open already
@@ -30,8 +33,12 @@ public class Percolation {
         if (row < 1 || row > length || col < 1 || col > length)
             throw new IllegalArgumentException();
         if (!isOpen(row, col)) {
-            int position = (row - 1) * length + col - 1;
+            int position = (row - 1) * length + col;
             status[position] = true;
+            if (position > 0 && position <= length)
+                status[0] = true;
+            if (position > length * length - length && position <= length * length)
+                status[length * length + 1] = true;
             if (col > 1 && isOpen(row, col - 1))
                 uf.union(position, position - 1);
             if (col < length && isOpen(row, col + 1))
@@ -40,7 +47,7 @@ public class Percolation {
                 uf.union(position, position - length);
             if (row < length && isOpen(row + 1, col))
                 uf.union(position, position + length);
-            count+=1;
+            count += 1;
         }
     }
 
@@ -48,41 +55,18 @@ public class Percolation {
     public boolean isOpen(int row, int col) {
         if (row < 1 || row > length || col < 1 || col > length)
             throw new IllegalArgumentException();
-        return status[(row - 1) * length + col - 1];
+        return status[(row - 1) * length + col];
     }
 
     // is the site (row, col) full?
     public boolean isFull(int row, int col) {
         if (row < 1 || row > length || col < 1 || col > length)
             throw new IllegalArgumentException();
+        int position = (row - 1) * length + col;
         boolean fullMark = false;
-//        boolean mark = false;
-//        for (int i = 0; i < length; i++) {
-//            if (isOpen(1, i + 1)) {
-//                int position = (row - 1) * length + col - 1;
-//                if (uf.find(position) == uf.find(i)) {
-//                    mark = true;
-//                    break;
-//                }
-//            }
-//        }
-        if (isOpen(row, col) && row < 2)
-            fullMark = true;
-        if (isOpen(row, col)) {
-            int position = (row - 1) * length + col - 1;
-            if (col > 1 && isOpen(row, col - 1))
-                if (uf.find(position - 1) >= 0 && (uf.find(position - 1) < length))
-                    fullMark = true;
-            if (col < length && isOpen(row, col + 1))
-                if (uf.find(position + 1) >= 0 && (uf.find(position + 1) < length))
-                    fullMark = true;
-            if (row > 1 && isOpen(row - 1, col))
-                if (uf.find(position - length) >= 0 && (uf.find(position - length) < length))
-                    fullMark = true;
-            if (row < length && isOpen(row + 1, col))
-                if (uf.find(position + length) >= 0 && (uf.find(position + length) < length))
-                    fullMark = true;
-        }
+        if (isOpen(row, col) && status[0])
+            if (uf.find(position) == uf.find(0))
+                fullMark = true;
         return fullMark;
     }
 
@@ -93,14 +77,10 @@ public class Percolation {
 
     // does the system percolate?
     public boolean percolates() {
-        if (!mark) {
-            for (int i = 1; i <= length; i++) {
-                if (isFull(length, i)) {
+        if (!mark)
+            if (status[0] && status[length * length + 1])
+                if (uf.find(length * length + 1) == uf.find(0))
                     mark = true;
-                    break;
-                }
-            }
-        }
         return mark;
     }
 
