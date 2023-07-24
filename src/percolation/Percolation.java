@@ -32,10 +32,15 @@ public class Percolation {
         }
     }
 
-    // opens the site (row, col) if it is not open already
-    public void open(int row, int col) {
+    // validate the row and column indices outside prescribed range
+    private void validate(int row, int col) {
         if (row < 1 || row > length || col < 1 || col > length)
             throw new IllegalArgumentException();
+    }
+
+    // opens the site (row, col) if it is not open already
+    public void open(int row, int col) {
+        validate(row, col);
         if (!isOpen(row, col)) {
             int position = (row - 1) * length + col;
             status[position] = true;
@@ -65,15 +70,13 @@ public class Percolation {
 
     // is the site (row, col) open?
     public boolean isOpen(int row, int col) {
-        if (row < 1 || row > length || col < 1 || col > length)
-            throw new IllegalArgumentException();
+        validate(row, col);
         return status[(row - 1) * length + col];
     }
 
     // is the site (row, col) full?
     public boolean isFull(int row, int col) {
-        if (row < 1 || row > length || col < 1 || col > length)
-            throw new IllegalArgumentException();
+        validate(row, col);
         int position = (row - 1) * length + col;
         return (isOpen(row, col) && status[0]) && ufNew.find(position) == ufNew.find(0);
     }
