@@ -5,7 +5,8 @@ import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 public class Percolation {
     private boolean[] status;
     private int length;
-    private WeightedQuickUnionUF uf;
+    private WeightedQuickUnionUF uf; // WeightedQuickUnionUF for method percolates
+    private WeightedQuickUnionUF ufNew; // WeightedQuickUnionUF for method isFull
     private  int count;
     private boolean mark;
 
@@ -19,10 +20,13 @@ public class Percolation {
         this.count = 0;
         this.mark = false;
         uf = new WeightedQuickUnionUF(n * n + 2);
+        ufNew = new WeightedQuickUnionUF(n * n + 1);
         for (int i = 0; i < n * n + 2; i++) {
             status[i] = false;
-            if (i > 0 && i <= n)
+            if (i > 0 && i <= n) {
                 uf.union(i, 0);
+                ufNew.union(i, 0);
+            }
             if (i > n * n - n && i <= n * n)
                 uf.union(i, n * n + 1);
         }
@@ -37,16 +41,24 @@ public class Percolation {
             status[position] = true;
             if (position > 0 && position <= length)
                 status[0] = true;
-            if (position > length * length - length && position <= length * length)
+            if (position > length * (length - 1) && position <= length * length)
                 status[length * length + 1] = true;
-            if (col > 1 && isOpen(row, col - 1))
+            if (col > 1 && isOpen(row, col - 1)) {
                 uf.union(position, position - 1);
-            if (col < length && isOpen(row, col + 1))
+                ufNew.union(position, position - 1);
+            }
+            if (col < length && isOpen(row, col + 1)) {
                 uf.union(position, position + 1);
-            if (row > 1 && isOpen(row - 1, col))
+                ufNew.union(position, position + 1);
+            }
+            if (row > 1 && isOpen(row - 1, col)) {
                 uf.union(position, position - length);
-            if (row < length && isOpen(row + 1, col))
+                ufNew.union(position, position - length);
+            }
+            if (row < length && isOpen(row + 1, col)) {
                 uf.union(position, position + length);
+                ufNew.union(position, position + length);
+            }
             count += 1;
         }
     }
@@ -63,11 +75,7 @@ public class Percolation {
         if (row < 1 || row > length || col < 1 || col > length)
             throw new IllegalArgumentException();
         int position = (row - 1) * length + col;
-        boolean fullMark = false;
-        if (isOpen(row, col) && status[0])
-            if (uf.find(position) == uf.find(0))
-                fullMark = true;
-        return fullMark;
+        return (isOpen(row, col) && status[0]) && ufNew.find(position) == ufNew.find(0);
     }
 
     // returns the number of open sites
